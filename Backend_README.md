@@ -1,4 +1,4 @@
-# Legal Aid Navigator - My RAG System Project
+# Legal Aid Navigator - My agentic RAG Project
 
 ## 1. Defining Your Problem and Audience
 
