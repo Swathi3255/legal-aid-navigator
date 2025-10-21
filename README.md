@@ -21,4 +21,5 @@ Please refer to Backend_README.md file
 | **Research** | ArXiv integration | Access to latest legal research |
 | **Document Processing** | PyMuPDF, Unstructured | Robust PDF and document processing |
 
-Loom video : 
+Loom video : https://www.loom.com/share/8f43a734389c4b7eaf1a5b30a3c87939?sid=5c2b16cd-3c58-4d09-bb46-8df0ebcae29c
+
