@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Aid Navigator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .search-section {
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .search-button {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .search-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .result-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .result-content {
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .result-sources {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .result-sources h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .source-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .example-queries {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .example-queries h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .example-query {
+            background: white;
+            padding: 12px 20px;
+            margin: 8px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-left: 3px solid #3498db;
+        }
+
+        .example-query:hover {
+            background: #e3f2fd;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Legal Aid Navigator</h1>
+            <p>Get instant answers to your housing and tenant rights questions</p>
+        </div>
+
+        <div class="main-content">
+            <div class="search-section">
+                <h2 style="color: #2c3e50; margin-bottom: 20px;">Ask Your Legal Question</h2>
+                <textarea 
+                    class="search-box" 
+                    id="questionInput" 
+                    placeholder="Enter your legal question here... (e.g., 'My landlord raised my rent by 15% - is this legal?')"
+                    rows="4"
+                ></textarea>
+                <button class="search-button" id="searchButton" onclick="searchLegalQuestion()">
+                    🔍 Get Legal Guidance
+                </button>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing your question and searching legal resources...</p>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+            </div>
+
+            <div class="results-section" id="resultsSection">
+                <h2 style="color: #2c3e50; margin-bottom: 20px;">Legal Analysis Results</h2>
+                <div id="resultsContainer"></div>
+            </div>
+
+            <div class="example-queries">
+                <h3>💡 Example Questions You Can Ask:</h3>
+                <div class="example-query" onclick="setExampleQuery('My landlord in San Francisco raised my rent by 15% this year. Is this legal?')">
+                    "My landlord in San Francisco raised my rent by 15% this year. Is this legal?"
+                </div>
+                <div class="example-query" onclick="setExampleQuery('What are my rights if my apartment has mold and the landlord won\'t fix it?')">
+                    "What are my rights if my apartment has mold and the landlord won't fix it?"
+                </div>
+                <div class="example-query" onclick="setExampleQuery('Can I break my lease early due to unsafe living conditions?')">
+                    "Can I break my lease early due to unsafe living conditions?"
+                </div>
+                <div class="example-query" onclick="setExampleQuery('What are the latest eviction protections in California?')">
+                    "What are the latest eviction protections in California?"
+                </div>
+                <div class="example-query" onclick="setExampleQuery('How do I file a complaint against my landlord for discrimination?')">
+                    "How do I file a complaint against my landlord for discrimination?"
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚠️ This tool provides general legal information only. Always consult with a qualified attorney for specific legal advice.</p>
+            <p>Powered by AI Legal Research System | Built for Educational Purposes</p>
+        </div>
+    </div>
+
+    <script>
+        // Set example query when clicked
+        function setExampleQuery(query) {
+            document.getElementById('questionInput').value = query;
+        }
+
+        // Search function
+        async function searchLegalQuestion() {
+            const questionInput = document.getElementById('questionInput');
+            const searchButton = document.getElementById('searchButton');
+            const loading = document.getElementById('loading');
+            const resultsSection = document.getElementById('resultsSection');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const resultsContainer = document.getElementById('resultsContainer');
+
+            const question = questionInput.value.trim();
+            
+            if (!question) {
+                showError('Please enter a legal question.');
+                return;
+            }
+
+            // Show loading state
+            searchButton.disabled = true;
+            searchButton.textContent = '🔍 Searching...';
+            loading.style.display = 'block';
+            resultsSection.style.display = 'none';
+            hideMessages();
+
+            try {
+                // Make API call to your backend
+                const response = await fetch('http://localhost:5000/api/legal-question', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Display results
+                displayResults(data);
+                showSuccess('Legal analysis completed successfully!');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Sorry, there was an error processing your question. Please make sure the backend server is running on http://localhost:5000');
+                
+                // Show mock results for demo purposes
+                displayMockResults(question);
+            } finally {
+                // Reset UI
+                searchButton.disabled = false;
+                searchButton.textContent = '🔍 Get Legal Guidance';
+                loading.style.display = 'none';
+            }
+        }
+
+        // Display results from API
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            resultsContainer.innerHTML = '';
+
+            // Research Insights
+            if (data.research_insights) {
+                const researchCard = createResultCard(
+                    '🔍 Research Insights',
+                    data.research_insights.output || data.research_insights,
+                    data.research_insights.sources || []
+                );
+                resultsContainer.appendChild(researchCard);
+            }
+
+            // Document Analysis
+            if (data.document_analysis) {
+                const documentCard = createResultCard(
+                    '📚 Document Analysis',
+                    data.document_analysis.output || data.document_analysis,
+                    data.document_analysis.sources || []
+                );
+                resultsContainer.appendChild(documentCard);
+            }
+
+            // Action Plan
+            if (data.action_plan) {
+                const actionCard = createResultCard(
+                    '🎯 Action Plan',
+                    data.action_plan.output || data.action_plan,
+                    []
+                );
+                resultsContainer.appendChild(actionCard);
+            }
+
+            // Combined Answer (if available)
+            if (data.answer) {
+                const answerCard = createResultCard(
+                    '💡 Legal Answer',
+                    data.answer,
+                    data.sources || []
+                );
+                resultsContainer.appendChild(answerCard);
+            }
+
+            resultsSection.style.display = 'block';
+        }
+
+        // Create result card
+        function createResultCard(title, content, sources) {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            
+            card.innerHTML = `
+                <div class="result-title">${title}</div>
+                <div class="result-content">${content}</div>
+                ${sources.length > 0 ? `
+                    <div class="result-sources">
+                        <h4>📖 Sources:</h4>
+                        ${sources.map(source => `<div class="source-item">${source}</div>`).join('')}
+                    </div>
+                ` : ''}
+            `;
+            
+            return card;
+        }
+
+        // Display mock results for demo
+        function displayMockResults(question) {
+            const mockData = {
+                research_insights: {
+                    output: "Based on current legal research, this appears to be a tenant rights question. Recent studies show that rent control laws vary significantly by jurisdiction.",
+                    sources: ["Recent Housing Law Research (2024)", "Tenant Rights Database"]
+                },
+                document_analysis: {
+                    output: "Analysis of relevant legal documents indicates that tenant rights are protected under various state and federal laws. The specific answer depends on your location and circumstances.",
+                    sources: ["California Tenant Rights Guide", "Fair Housing Act Summary"]
+                },
+                action_plan: {
+                    output: "1. Document all communications with your landlord\n2. Research local tenant rights organizations\n3. Consider consulting with a legal aid attorney\n4. Keep records of all relevant documents"
+                }
+            };
+            
+            displayResults(mockData);
+            showSuccess('Demo results displayed (backend not connected)');
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Hide messages
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('questionInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                searchLegalQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
