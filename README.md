@@ -1,5 +1,5 @@
 # 🏛️ Legal Aid Navigator
-
+https://legal-aid-navigator.onrender.com/
 An advanced AI-powered RAG (Retrieval-Augmented Generation) system that helps tenants understand their legal rights and navigate complex housing laws across different jurisdictions. Built with state-of-the-art LLM technology and comprehensive evaluation frameworks.
 
 > **"Intelligent Legal Guidance for Those Who Need It Most"**
@@ -83,7 +83,7 @@ Every answer includes:
 - Total Cost: **$0/month**
 
 **After deployment, your app will be live at:**
-- `https://legal-aid-navigator.vercel.app` (or your custom domain)
+- `https://legal-aid-navigator.onrender.com/`
 
 ---
 
