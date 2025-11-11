@@ -5,9 +5,11 @@ const config = {
     // For local development, use:
     // API_URL: 'http://localhost:5000'
     
-    // For production, replace with your Render backend URL:
-    // API_URL: 'https://your-backend-name.onrender.com'
+    // For production on Render (same domain for frontend + backend):
+    // Use empty string for same-origin requests
+    API_URL: ''  // Empty string means same server
     
-    API_URL: 'http://localhost:5000'  // Change this after deploying backend!
+    // Or use full URL:
+    // API_URL: 'https://legal-aid-navigator.onrender.com'
 };
 

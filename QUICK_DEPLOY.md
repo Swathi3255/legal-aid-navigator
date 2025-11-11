@@ -17,6 +17,19 @@
 
 ---
 
+## 🤔 Why Two Services?
+
+**Short answer:** Vercel is perfect for your website (frontend), but Render is better for your Python Flask server (backend).
+
+**Want just ONE service?** See [DEPLOY_RENDER_ONLY.md](DEPLOY_RENDER_ONLY.md) to deploy everything on Render only.
+
+**This guide (Vercel + Render) is recommended** because:
+- ✅ Better performance (Vercel CDN is super fast)
+- ✅ Industry standard approach
+- ✅ Still completely free
+
+---
+
 ## Step 1: Push to GitHub (5 min)
 
 ```bash
